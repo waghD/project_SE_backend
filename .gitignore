@@ -53,3 +53,4 @@ var/
 
 .env
 db.sqlite3
+/logistics/migrations/
