@@ -6,18 +6,18 @@ class Order(models.Model):
     def __str__(self):
         return self.id.__str__()
     id = models.AutoField(primary_key=True)
-    freighter = models.ForeignKey('FreightCompany', on_delete=models.CASCADE)
+    freighter = models.ForeignKey('FreightCompany', blank=True, on_delete=models.CASCADE, null=True)
     sender = models.CharField(max_length=150)
-    pickup_point = models.TextField()
-    dropoff_point = models.TextField
+    pickup_point = models.TextField(default=' ')
+    dropoff_point = models.TextField(default=' ')
     pickup_date = models.DateTimeField()
     delivery_date = models.DateTimeField()
     price = models.PositiveIntegerField()
-    vehicle = models.ForeignKey('Vehicle', on_delete=models.SET_NULL, null=True)
-    driver = models.ForeignKey('Driver', on_delete=models.SET_NULL, null=True)
+    vehicle = models.ForeignKey('Vehicle', blank=True, on_delete=models.SET_NULL, null=True)
+    driver = models.ForeignKey('Driver', blank=True, on_delete=models.SET_NULL, null=True)
     state = models.BooleanField(default=False)
-    rating = models.PositiveSmallIntegerField()
-    goods = models.TextField
+    rating = models.PositiveSmallIntegerField(blank=True)
+    goods = models.TextField(default=' ')
 
 
 class Region(models.Model):
