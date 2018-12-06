@@ -16,7 +16,7 @@ class Order(models.Model):
     vehicle = models.ForeignKey('Vehicle', blank=True, on_delete=models.SET_NULL, null=True)
     driver = models.ForeignKey('Driver', blank=True, on_delete=models.SET_NULL, null=True)
     state = models.BooleanField(default=False)
-    rating = models.PositiveSmallIntegerField(blank=True)
+    rating = models.PositiveSmallIntegerField(blank=True, null=True)
     goods = models.TextField(default=' ')
 
 
