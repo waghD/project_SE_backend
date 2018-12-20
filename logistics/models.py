@@ -15,21 +15,7 @@ from django.db import models
     vehicle = models.ForeignKey('Vehicle', blank=True, on_delete=models.SET_NULL, null=True)
     driver = models.ForeignKey('Driver', blank=True, on_delete=models.SET_NULL, null=True)
     state = models.BooleanField(default=False)
-<<<<<<< HEAD
-    rating = models.PositiveSmallIntegerField(blank=True)
-    goods = models.TextField(default=' ')"""
-=======
-    rating = models.PositiveSmallIntegerField(blank=True, null=True)
-    goods = models.TextField(default=' ')
->>>>>>> c957368e5c6ffeb3ed410d60c4950247d133a8c6
-
-
-class Region(models.Model):
-    def __str__(self):
-        return self.name
-    name = models.TextField(primary_key=True)
-    country = models.TextField()
-    state = models.TextField()
+"""
 
 
 class FreightCompany(models.Model):
@@ -43,13 +29,16 @@ class FreightCompany(models.Model):
     permissions = models.TextField()
     revenue = models.PositiveIntegerField()
     founding_year = models.DateField()
-    destinations = models.ManyToManyField(Region, through='Destination', through_fields=('freighter', 'region'))
-    logo = models.Empty
+    logo = models.ImageField
 
 
-class Destination(models.Model):
-    freighter = models.ForeignKey(FreightCompany, on_delete=models.CASCADE)
-    region = models.ForeignKey('Region', on_delete=models.CASCADE)
+class Region(models.Model):
+    def __str__(self):
+        return self.name
+    name = models.TextField(primary_key=True)
+    company = models.ForeignKey(FreightCompany, on_delete=models.CASCADE, default='')
+    country = models.TextField()
+    state = models.TextField()
 
 
 class Vehicle(models.Model):

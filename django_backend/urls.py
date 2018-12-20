@@ -15,10 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework_swagger.views import get_swagger_view
+from .api import router
+
+schema_view = get_swagger_view(title='Logistics Api')
 
 urlpatterns = [
-    path('logistics/', include('logistics.urls')),
     path('admin/', admin.site.urls),
+    path('api/', include(router.urls)),
+    path('doc/', schema_view),
 ]
-urlpatterns = format_suffix_patterns(urlpatterns)
+

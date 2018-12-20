@@ -1,11 +1,11 @@
 from django.http import HttpResponse
-from .models import FreightCompany
-from .serializers import FreightListSerializer,FreightCompanySerializer
-from rest_framework import generics
+from .models import FreightCompany,Truck,Region
+from .serializers import FreightCompanySerializer,TruckSerializer, RegionSerializer
+from rest_framework.viewsets import ModelViewSet
+from rest_framework_extensions.mixins import NestedViewSetMixin
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework import renderers
 
 
 def index(request):
@@ -19,20 +19,18 @@ def api_root(request, format=None):
     })
 
 
-class FreighterList(generics.ListCreateAPIView):
-    queryset = FreightCompany.objects.all()
-    serializer_class = FreightListSerializer
-
-
-class FreighterCompany(generics.RetrieveUpdateDestroyAPIView):
-    queryset = FreightCompany.objects.all()
+class FreighterViewSet(ModelViewSet,NestedViewSetMixin):
     serializer_class = FreightCompanySerializer
-
-
-class FreighterHighlight(generics.GenericAPIView):
     queryset = FreightCompany.objects.all()
-    renderer_classes = (renderers.StaticHTMLRenderer,)
 
-    def get(self, request, *args, **kwargs):
-        freighter = self.get_object()
-        return Response(freighter.highlighted)
+
+class TruckViewSet(ModelViewSet,NestedViewSetMixin):
+    serializer_class = TruckSerializer
+    queryset = Truck.objects.all()
+
+
+class DestinationViewSet(ModelViewSet,NestedViewSetMixin):
+    serializer_class = RegionSerializer
+    queryset = Region.objects.all()
+
+
