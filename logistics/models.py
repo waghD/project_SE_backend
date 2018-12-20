@@ -15,8 +15,13 @@ from django.db import models
     vehicle = models.ForeignKey('Vehicle', blank=True, on_delete=models.SET_NULL, null=True)
     driver = models.ForeignKey('Driver', blank=True, on_delete=models.SET_NULL, null=True)
     state = models.BooleanField(default=False)
+<<<<<<< HEAD
     rating = models.PositiveSmallIntegerField(blank=True)
     goods = models.TextField(default=' ')"""
+=======
+    rating = models.PositiveSmallIntegerField(blank=True, null=True)
+    goods = models.TextField(default=' ')
+>>>>>>> c957368e5c6ffeb3ed410d60c4950247d133a8c6
 
 
 class Region(models.Model):
@@ -34,7 +39,7 @@ class FreightCompany(models.Model):
     name = models.TextField()
     location = models.TextField()
     has_own_vehicles = models.BooleanField(default=True)
-    rating = models.PositiveSmallIntegerField()
+    rating = models.PositiveSmallIntegerField(blank=True, null=True)
     permissions = models.TextField()
     revenue = models.PositiveIntegerField()
     founding_year = models.DateField()
