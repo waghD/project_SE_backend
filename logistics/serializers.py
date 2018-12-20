@@ -1,11 +1,17 @@
 from rest_framework import serializers
-from .models import Order
+from .models import FreightCompany
 
 
-class OrderSerializer(serializers.ModelSerializer):
+class FreightListSerializer(serializers.HyperlinkedModelSerializer):
+
     class Meta:
-        model = Order
-        fields = ('id', 'sender', 'pickup_point', 'dropoff_point', 'pickup_date', 'delivery_date', 'price',
-                  'state', 'rating', 'goods'
-                  # 'freighter','vehicle', 'driver', For later Implemantation
-                  )
+        model = FreightCompany
+        fields = ('name', 'location')
+
+
+class FreightCompanySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FreightCompany
+        fields = ('name', 'location', 'has_own_vehicles', 'rating', 'permissions',
+                  'revenue', 'founding_year')

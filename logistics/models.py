@@ -1,7 +1,6 @@
 from django.db import models
 
-
-class Order(models.Model):
+"""""class Order(models.Model):
 
     def __str__(self):
         return self.id.__str__()
@@ -17,7 +16,7 @@ class Order(models.Model):
     driver = models.ForeignKey('Driver', blank=True, on_delete=models.SET_NULL, null=True)
     state = models.BooleanField(default=False)
     rating = models.PositiveSmallIntegerField(blank=True)
-    goods = models.TextField(default=' ')
+    goods = models.TextField(default=' ')"""
 
 
 class Region(models.Model):
@@ -31,13 +30,12 @@ class Region(models.Model):
 class FreightCompany(models.Model):
     def __str__(self):
         return self.name
-    name = models.TextField(primary_key=True)
+    id = models.AutoField(primary_key=True)
+    name = models.TextField()
     location = models.TextField()
     has_own_vehicles = models.BooleanField(default=True)
     rating = models.PositiveSmallIntegerField()
-    vehicles = models.Empty()
-    premissions = models.TextField()
-    driver = models.Empty()
+    permissions = models.TextField()
     revenue = models.PositiveIntegerField()
     founding_year = models.DateField()
     destinations = models.ManyToManyField(Region, through='Destination', through_fields=('freighter', 'region'))
@@ -45,20 +43,25 @@ class FreightCompany(models.Model):
 
 
 class Destination(models.Model):
-    freighter = models.ForeignKey('FreightCompany', on_delete=models.CASCADE)
+    freighter = models.ForeignKey(FreightCompany, on_delete=models.CASCADE)
     region = models.ForeignKey('Region', on_delete=models.CASCADE)
 
 
 class Vehicle(models.Model):
-    id = models.AutoField(primary_key=True)
-    occupied = models.BooleanField()
-    location = models.TextField()
-    donedate = models.DateField()
-    builtdate = models.DateField()
-    length = models.PositiveSmallIntegerField()
+    company = models.ForeignKey(FreightCompany, on_delete=models.CASCADE, default='')
+    occupied = models.BooleanField(default=False)
+    location = models.TextField(null=True)
+    donedate = models.DateField(default='1980-02-01')
+    builtdate = models.DateField(default='1980-02-01')
+    length = models.PositiveSmallIntegerField(null=True)
+
+    class Meta:
+        abstract = True
 
 
 class Truck(Vehicle):
+    def __str__(self):
+        return 'Vehicle ' + str(self.pk)
     licenseplate = models.CharField(max_length=10)
     emptyWeight = models.PositiveIntegerField()
     loadWeight = models.PositiveIntegerField()
@@ -100,6 +103,7 @@ class Driver(models.Model):
     def __str__(self):
         return self.name
     id = models.AutoField(primary_key=True)
+    company = models.ForeignKey(FreightCompany, on_delete=models.CASCADE, default='')
     name = models.CharField(max_length=200)
     gebd_dat = models.DateField()
     rating = models.PositiveSmallIntegerField()
