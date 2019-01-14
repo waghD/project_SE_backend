@@ -1,12 +1,12 @@
 from django.contrib import admin
-from .models import Region, FreightCompany, Truck, Driver, LiquidTruck, LoadingTruck, \
-    ContainerTruck, TemperatureTruck
+from .models import Destination, AirFreightCompany,RailwayFreightCompany,RoadFreightCompany, Truck, Driver, \
+    Plane, Train
 
-admin.site.register(Region)
-admin.site.register(FreightCompany)
+admin.site.register(Destination)
+admin.site.register(AirFreightCompany)
+admin.site.register(RailwayFreightCompany)
+admin.site.register(RoadFreightCompany)
 admin.site.register(Truck)
 admin.site.register(Driver)
-admin.site.register(LiquidTruck)
-admin.site.register(LoadingTruck)
-admin.site.register(ContainerTruck)
-admin.site.register(TemperatureTruck)
+admin.site.register(Plane)
+admin.site.register(Train)
