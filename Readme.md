@@ -6,6 +6,13 @@ Folgende Schritte sind zum starten des Programs notwendig
 # Schritt 1
 
 ```python
+pip install -r requirements.txt
+```
+
+
+# Schritt 2
+
+```python
 py manage.py migrate
 ```
 
