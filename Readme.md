@@ -16,19 +16,25 @@ pip install -r requirements.txt
 py manage.py migrate
 ```
 
-# Schritt 2
+# Schritt 3
 
 ```python
 py manage.py makemigrations logistics
 ```
+# Schritt 4
 
-# Schritt 3
+```python
+py manage.py loaddata initial.json
+```
+
+
+# Schritt 5
 
 ```python
 py manage.py createsuperuser
 ```
 
-# Schritt 4
+# Schritt 6
 
 ```python
 py manage.py runserver

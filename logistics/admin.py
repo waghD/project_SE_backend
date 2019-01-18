@@ -1,8 +1,7 @@
 from django.contrib import admin
-from .models import Destination, AirFreightCompany,RailwayFreightCompany,RoadFreightCompany, Truck, Driver, \
-    Plane, Train
+from .models import AirFreightCompany,RailwayFreightCompany,RoadFreightCompany, Truck, Driver, \
+    Plane, Train, Vehicle
 
-admin.site.register(Destination)
 admin.site.register(AirFreightCompany)
 admin.site.register(RailwayFreightCompany)
 admin.site.register(RoadFreightCompany)

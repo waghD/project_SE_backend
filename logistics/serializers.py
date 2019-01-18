@@ -1,5 +1,16 @@
 from rest_framework import serializers
-from .models import FreightCompany, Truck, Plane, Train, Destination, Vehicle
+from .models import FreightCompany, Truck, Plane, Train,Vehicle,Driver
+from django_countries.serializers import CountryFieldMixin
+from django.contrib.auth.models import User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    freightcompany = serializers.PrimaryKeyRelatedField(many=True, queryset=FreightCompany.objects.all())
+    vehicles = serializers.PrimaryKeyRelatedField(many=True,  queryset=Vehicle.objects.all())
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'freightcompany', 'vehicles')
 
 
 class FreightListSerializer(serializers.HyperlinkedModelSerializer):
@@ -13,60 +24,56 @@ class PlaneListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Plane
-        fields = ('name', 'types', 'occupied')
+        fields = ('id', 'name', 'types', 'occupied')
 
 
 class TrainListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Train
-        fields = ('name', 'types', 'occupied')
+        fields = ('id','name', 'types', 'occupied')
 
 
 class TruckListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Truck
-        fields = ('name', 'types', 'occupied')
+        fields = ('id', 'name', 'types', 'occupied')
 
 
 class TruckSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    driver = serializers.PrimaryKeyRelatedField(many=False, queryset=Driver.objects.all())
+
     class Meta:
         model = Truck
         fields = '__all__'
 
 
-class DestinationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Destination
-        fields = ('name', 'country', 'state')
-
-
 class PlaneSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    driver = serializers.PrimaryKeyRelatedField(many=False, queryset=Driver.objects.all())
+
     class Meta:
         model = Plane
         fields = '__all__'
 
 
 class TrainSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    driver = serializers.PrimaryKeyRelatedField(many=False, queryset=Driver.objects.all())
+
     class Meta:
         model = Train
         fields = '__all__'
 
 
-class FreightCompanySerializer(serializers.ModelSerializer):
-    destinations = DestinationSerializer(many=True)
+class FreightCompanySerializer(CountryFieldMixin,serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:
         model = FreightCompany
         fields = '__all__'
-
-    def create(self, validated_data):
-        destinations_data = validated_data.pop['destinations']
-        freightcompany = FreightCompany.objects.create(**validated_data)
-        for destination_data in destinations_data:
-            Destination.objects.create(**destination_data)
-        return freightcompany
 
 
 class AirFreightCompanySerializer(FreightCompanySerializer):
@@ -80,3 +87,10 @@ class RailwayFreightCompanySerializer(FreightCompanySerializer):
 class RoadFreightCompanySerializer(FreightCompanySerializer):
     trucks = TruckListSerializer(many=True, read_only=True)
 
+
+class DriverSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+
+    class Meta:
+        model = Driver
+        fields = '__all__'

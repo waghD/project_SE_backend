@@ -1,12 +1,15 @@
 from django.http import HttpResponse
+from django.contrib.auth.models import User
 from .models import AirFreightCompany,RailwayFreightCompany,RoadFreightCompany,\
-                     Truck, Plane, Train, Destination, FreightCompany
+                     Truck, Plane, Train,  FreightCompany, Driver
 from .serializers import TruckSerializer, PlaneSerializer, TrainSerializer, \
-    DestinationSerializer, PlaneListSerializer,TrainListSerializer, TruckListSerializer,\
-    AirFreightCompanySerializer,RailwayFreightCompanySerializer,RoadFreightCompanySerializer, FreightCompanySerializer
+     PlaneListSerializer,TrainListSerializer, TruckListSerializer, UserSerializer,DriverSerializer,\
+     AirFreightCompanySerializer,RailwayFreightCompanySerializer,RoadFreightCompanySerializer, FreightCompanySerializer
 from rest_framework.viewsets import ModelViewSet, GenericViewSet, ReadOnlyModelViewSet
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from rest_framework import mixins
+from .permissions import IsOwnerOrReadOnly
+from rest_framework import permissions
 
 
 def index(request):
@@ -15,7 +18,16 @@ def index(request):
 
 class DetailViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
                     mixins.UpdateModelMixin, GenericViewSet):
-    pass
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly,)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
+class UserViewSet(ReadOnlyModelViewSet):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
 
 
 class FreighterList(ReadOnlyModelViewSet):
@@ -41,16 +53,39 @@ class TruckListViewSet(ReadOnlyModelViewSet, NestedViewSetMixin):
 class AirFreighterViewSet(ModelViewSet, NestedViewSetMixin):
     serializer_class = AirFreightCompanySerializer
     queryset = AirFreightCompany.objects.all()
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly,)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class RoadFreighterViewSet(ModelViewSet, NestedViewSetMixin):
     serializer_class = RoadFreightCompanySerializer
     queryset = RoadFreightCompany.objects.all()
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly,)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class RailFreighterViewSet(ModelViewSet, NestedViewSetMixin):
     serializer_class = RailwayFreightCompanySerializer
     queryset = RailwayFreightCompany.objects.all()
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly,)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
+class DriverViewSet(ModelViewSet, NestedViewSetMixin):
+    serializer_class = DriverSerializer
+    queryset = Driver.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class TruckViewSet(DetailViewSet, NestedViewSetMixin):
@@ -66,10 +101,3 @@ class PlaneViewSet(DetailViewSet, NestedViewSetMixin):
 class TrainViewSet(DetailViewSet, NestedViewSetMixin):
     serializer_class = TrainSerializer
     queryset = Train.objects.all()
-
-
-class DestinationViewSet(ModelViewSet, NestedViewSetMixin):
-    serializer_class = DestinationSerializer
-    queryset = Destination.objects.all()
-
-

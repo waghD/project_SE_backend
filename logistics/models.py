@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import DEFERRED
 from django.contrib.auth.models import User
+from django_countries.fields import CountryField
 
 
 class FreightCompany(models.Model):
@@ -32,10 +33,10 @@ class FreightCompany(models.Model):
                      ('ROAD', 'Road-Freight'),
                      ('RAIL', 'Railway-Freight'),)
     type = models.CharField(choices=FREIGHT_TYPES, default='', max_length=100)
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    owner = models.ForeignKey(User, related_name='freightcompany', on_delete=models.SET_NULL, null=True, blank=True)
     has_own_vehicles = models.BooleanField(default=True)
     rating = models.PositiveSmallIntegerField(blank=True, null=True)
-    destinations = models.ManyToManyField('Destination')
+    destinations = CountryField(multiple=True, blank_label='(select country)', blank=True)
     permissions = models.TextField()
     revenue = models.PositiveIntegerField()
     founding_year = models.DateField()
@@ -120,13 +121,6 @@ class RailwayFreightCompany(FreightCompany):
         proxy = True
 
 
-class Destination(models.Model):
-    def __str__(self):
-        return self.name
-    name = models.TextField(primary_key=True)
-    country = models.TextField()
-    state = models.TextField()
-
 
 class Vehicle(models.Model):
 
@@ -163,7 +157,8 @@ class Vehicle(models.Model):
     builtdate = models.DateField(default='1980-02-01')
     length = models.PositiveSmallIntegerField(null=True)
     maxWeight = models.PositiveIntegerField(default=100)
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    owner = models.ForeignKey(User,related_name='vehicles', on_delete=models.SET_NULL, null=True, blank=True)
+    driver  = models.ForeignKey('Driver' , related_name='driver', on_delete=models.SET_NULL, null=True, blank=True)
     goods = models.CharField(max_length=10, blank=True)
     features = models.TextField(max_length=100, blank=True)
 
@@ -285,3 +280,4 @@ class Driver(models.Model):
     driving_license_classes = models.CharField(max_length=250)
     work_experience = models.PositiveSmallIntegerField()
     available = models.BooleanField(default=True)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
