@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import FreightCompany, Truck, Plane, Train,Vehicle,Driver
+from .models import FreightCompany, Truck, Plane, Train, Vehicle, Driver, Features
 from django_countries.serializers import CountryFieldMixin
 from django.contrib.auth.models import User
 
@@ -11,6 +11,13 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'freightcompany', 'vehicles')
+
+
+class FeatureSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Features
+        fields = ('name', 'description', 'vehicle')
 
 
 class FreightListSerializer(serializers.HyperlinkedModelSerializer):
@@ -44,6 +51,7 @@ class TruckListSerializer(serializers.ModelSerializer):
 class TruckSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     driver = serializers.PrimaryKeyRelatedField(many=False, queryset=Driver.objects.all())
+    vehicles = FeatureSerializer(many=True, read_only=True)
 
     class Meta:
         model = Truck
@@ -53,6 +61,7 @@ class TruckSerializer(serializers.ModelSerializer):
 class PlaneSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     driver = serializers.PrimaryKeyRelatedField(many=False, queryset=Driver.objects.all())
+    vehicles = FeatureSerializer(many=True, read_only=True)
 
     class Meta:
         model = Plane
@@ -62,6 +71,7 @@ class PlaneSerializer(serializers.ModelSerializer):
 class TrainSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     driver = serializers.PrimaryKeyRelatedField(many=False, queryset=Driver.objects.all())
+    vehicles = FeatureSerializer(many=True, read_only=True)
 
     class Meta:
         model = Train

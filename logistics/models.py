@@ -121,7 +121,6 @@ class RailwayFreightCompany(FreightCompany):
         proxy = True
 
 
-
 class Vehicle(models.Model):
 
     def __str__(self):
@@ -158,9 +157,8 @@ class Vehicle(models.Model):
     length = models.PositiveSmallIntegerField(null=True)
     maxWeight = models.PositiveIntegerField(default=100)
     owner = models.ForeignKey(User,related_name='vehicles', on_delete=models.SET_NULL, null=True, blank=True)
-    driver  = models.ForeignKey('Driver' , related_name='driver', on_delete=models.SET_NULL, null=True, blank=True)
+    driver = models.ForeignKey('Driver' , related_name='driver', on_delete=models.SET_NULL, null=True, blank=True)
     goods = models.CharField(max_length=10, blank=True)
-    features = models.TextField(max_length=100, blank=True)
 
 
 class ManagerPlane(models.Manager):
@@ -238,6 +236,14 @@ class Truck(Vehicle):
     permission_until = models.DateField()
     emission_class = models.CharField(max_length=5)
     company = models.ForeignKey(RoadFreightCompany, on_delete=models.CASCADE, default='')
+
+
+class Features(models.Model):
+    def __str__(self):
+        return self.name
+    vehicle = models.ForeignKey(Vehicle, related_name='features', on_delete=models.CASCADE, default='')
+    name = models.CharField(max_length=100, default='')
+    description = models.TextField(max_length=100, blank=True)
 
 
 '''class CraneTruck(Truck):

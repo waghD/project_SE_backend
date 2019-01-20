@@ -1,15 +1,16 @@
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from .models import AirFreightCompany,RailwayFreightCompany,RoadFreightCompany,\
-                     Truck, Plane, Train,  FreightCompany, Driver
-from .serializers import TruckSerializer, PlaneSerializer, TrainSerializer, \
+                     Truck, Plane, Train,  FreightCompany, Driver, Features
+from .serializers import TruckSerializer, PlaneSerializer, TrainSerializer, FeatureSerializer, \
      PlaneListSerializer,TrainListSerializer, TruckListSerializer, UserSerializer,DriverSerializer,\
      AirFreightCompanySerializer,RailwayFreightCompanySerializer,RoadFreightCompanySerializer, FreightCompanySerializer
 from rest_framework.viewsets import ModelViewSet, GenericViewSet, ReadOnlyModelViewSet
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from rest_framework import mixins
 from .permissions import IsOwnerOrReadOnly
-from rest_framework import permissions
+from rest_framework import permissions,filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 def index(request):
@@ -17,7 +18,7 @@ def index(request):
 
 
 class DetailViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
-                    mixins.UpdateModelMixin, GenericViewSet):
+                    mixins.UpdateModelMixin, mixins.ListModelMixin, GenericViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
@@ -32,6 +33,9 @@ class UserViewSet(ReadOnlyModelViewSet):
 
 class FreighterList(ReadOnlyModelViewSet):
     serializer_class = FreightCompanySerializer
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
+    filter_fields = ('name', 'type', 'location', 'permissions',)
+    search_fields = ('name','type', 'location','permissions',)
     queryset = FreightCompany.objects.all()
 
 
@@ -50,8 +54,16 @@ class TruckListViewSet(ReadOnlyModelViewSet, NestedViewSetMixin):
     queryset = Truck.objects.all()
 
 
+class FeautureListViewSet(ReadOnlyModelViewSet, NestedViewSetMixin):
+    serializer_class = FeatureSerializer
+    queryset = Features.objects.all()
+
+
 class AirFreighterViewSet(ModelViewSet, NestedViewSetMixin):
     serializer_class = AirFreightCompanySerializer
+    filter_backends = (filters.SearchFilter,DjangoFilterBackend,)
+    search_fields = ('name', 'type', 'location', 'permissions',)
+    filter_fields = ('name', 'type', 'location', 'permissions',)
     queryset = AirFreightCompany.objects.all()
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
@@ -62,6 +74,9 @@ class AirFreighterViewSet(ModelViewSet, NestedViewSetMixin):
 
 class RoadFreighterViewSet(ModelViewSet, NestedViewSetMixin):
     serializer_class = RoadFreightCompanySerializer
+    filter_backends = (filters.SearchFilter,DjangoFilterBackend,)
+    filter_fields = ('name', 'type', 'location', 'permissions',)
+    search_fields = ('name', 'type', 'location', 'permissions',)
     queryset = RoadFreightCompany.objects.all()
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
@@ -73,6 +88,9 @@ class RoadFreighterViewSet(ModelViewSet, NestedViewSetMixin):
 class RailFreighterViewSet(ModelViewSet, NestedViewSetMixin):
     serializer_class = RailwayFreightCompanySerializer
     queryset = RailwayFreightCompany.objects.all()
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
+    filter_fields = ('name', 'type', 'location', 'permissions',)
+    search_fields = ('name', 'type', 'location', 'permissions',)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
@@ -90,14 +108,31 @@ class DriverViewSet(ModelViewSet, NestedViewSetMixin):
 
 class TruckViewSet(DetailViewSet, NestedViewSetMixin):
     serializer_class = TruckSerializer
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
+    filter_fields = ('name', 'types', 'location', 'goods', 'features', 'company__id')
+    search_fields = ('name', 'types', 'location', 'goods', 'features')
     queryset = Truck.objects.all()
 
 
 class PlaneViewSet(DetailViewSet, NestedViewSetMixin):
     serializer_class = PlaneSerializer
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
+    filter_fields = ('name', 'types', 'location', 'goods', 'features', 'company__id')
+    search_fields = ('name', 'types', 'location','goods', 'features')
     queryset = Plane.objects.all()
 
 
 class TrainViewSet(DetailViewSet, NestedViewSetMixin):
     serializer_class = TrainSerializer
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
+    filter_fields = ('name', 'types', 'location','goods', 'features', 'company__id')
+    search_fields = ('name', 'types', 'location','goods', 'features')
     queryset = Train.objects.all()
+
+
+class FeatureViewSet(ModelViewSet, NestedViewSetMixin):
+    serializer_class = FeatureSerializer
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
+    search_fields = ('name',)
+    filter_fields = ('vehicle__types', 'vehicle__id')
+    queryset = Features.objects.all()
