@@ -151,13 +151,13 @@ class Vehicle(models.Model):
     types = models.CharField(choices=VEHICLE_TYPES, default='', max_length=100)
     name = models.CharField(default='', max_length=100)
     occupied = models.BooleanField(default=False)
-    location = models.TextField(null=True)
+    location = models.CharField(default='', max_length=200)
     donedate = models.DateField(default='1980-02-01')
     builtdate = models.DateField(default='1980-02-01')
     length = models.PositiveSmallIntegerField(null=True)
     maxWeight = models.PositiveIntegerField(default=100)
     owner = models.ForeignKey(User,related_name='vehicles', on_delete=models.SET_NULL, null=True, blank=True)
-    driver = models.ForeignKey('Driver' , related_name='driver', on_delete=models.SET_NULL, null=True, blank=True)
+    driver = models.ForeignKey('Driver', related_name='driver', on_delete=models.SET_NULL, null=True, blank=True)
     goods = models.CharField(max_length=10, blank=True)
 
 
@@ -221,11 +221,13 @@ class ManagerTrain(models.Manager):
 class Train(Vehicle):
     objects = ManagerTrain()
     company = models.ForeignKey(RailwayFreightCompany, on_delete=models.CASCADE, default='')
+    features = models.ManyToManyField('Features', limit_choices_to={'vehicle': 'RAIL'})
 
 
 class Plane(Vehicle):
     objects = ManagerPlane()
     company = models.ForeignKey(AirFreightCompany, on_delete=models.CASCADE, default='')
+    features = models.ManyToManyField('Features', limit_choices_to={'vehicle': 'AIR'})
 
 
 class Truck(Vehicle):
@@ -236,43 +238,20 @@ class Truck(Vehicle):
     permission_until = models.DateField()
     emission_class = models.CharField(max_length=5)
     company = models.ForeignKey(RoadFreightCompany, on_delete=models.CASCADE, default='')
+    features = models.ManyToManyField('Features', limit_choices_to={'vehicle': 'ROAD'})
 
 
 class Features(models.Model):
     def __str__(self):
         return self.name
-    vehicle = models.ForeignKey(Vehicle, related_name='features', on_delete=models.CASCADE, default='')
+
+    VEHICLE_TYPES = (('ROAD', 'Truck'),
+                     ('AIR', 'Airplane'),
+                     ('RAIL', 'Train'),
+                     )
+    vehicle = models.CharField(choices=VEHICLE_TYPES, default='', max_length=100)
     name = models.CharField(max_length=100, default='')
     description = models.TextField(max_length=100, blank=True)
-
-
-'''class CraneTruck(Truck):
-    crane_class = models.TextField()
-    wind = models.BooleanField()
-    range = models.PositiveIntegerField()
-
-
-class ContainerTruck(Truck):
-    container_length = models.PositiveIntegerField()
-    container_width = models.PositiveIntegerField()
-    container_height = models.PositiveIntegerField()
-    has_ramp = models.BooleanField()
-
-
-class TemperatureTruck(Truck):
-    cooling_power = models.PositiveIntegerField()
-
-
-class LiquidTruck(Truck):
-    liquids = models.CharField(max_length=150)
-    liters = models.PositiveIntegerField()
-    dangerous_goods = models.BooleanField()
-    point_of_entry = models.CharField(max_length=100)
-
-
-class LoadingTruck(Truck):
-    has_walls = models.BooleanField()
-    has_sticks = models.BooleanField()'''
 
 
 class Driver(models.Model):

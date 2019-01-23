@@ -41,17 +41,26 @@ class FreighterList(ReadOnlyModelViewSet):
 
 class PlaneListViewSet(ReadOnlyModelViewSet, NestedViewSetMixin):
     serializer_class = PlaneListSerializer
-    queryset = Plane.objects.all()
+
+    def get_queryset(self):
+        queryset = Plane.objects.all()
+        return self.filter_queryset_by_parents_lookups(queryset)
 
 
 class TrainListViewSet(ReadOnlyModelViewSet, NestedViewSetMixin):
     serializer_class = TrainListSerializer
-    queryset = Train.objects.all()
+
+    def get_queryset(self):
+        queryset = Train.objects.all()
+        return self.filter_queryset_by_parents_lookups(queryset)
 
 
 class TruckListViewSet(ReadOnlyModelViewSet, NestedViewSetMixin):
     serializer_class = TruckListSerializer
-    queryset = Truck.objects.all()
+
+    def get_queryset(self):
+        queryset = Truck.objects.all()
+        return self.filter_queryset_by_parents_lookups(queryset)
 
 
 class FeautureListViewSet(ReadOnlyModelViewSet, NestedViewSetMixin):
@@ -134,5 +143,4 @@ class FeatureViewSet(ModelViewSet, NestedViewSetMixin):
     serializer_class = FeatureSerializer
     filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
     search_fields = ('name',)
-    filter_fields = ('vehicle__types', 'vehicle__id')
     queryset = Features.objects.all()

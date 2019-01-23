@@ -17,7 +17,7 @@ class FeatureSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Features
-        fields = ('name', 'description', 'vehicle')
+        fields = ('name', 'description',)
 
 
 class FreightListSerializer(serializers.HyperlinkedModelSerializer):
@@ -31,7 +31,7 @@ class PlaneListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Plane
-        fields = ('id', 'name', 'types', 'occupied')
+        fields = ('id', 'name', 'types', 'occupied', 'company')
 
 
 class TrainListSerializer(serializers.ModelSerializer):
@@ -51,7 +51,7 @@ class TruckListSerializer(serializers.ModelSerializer):
 class TruckSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     driver = serializers.PrimaryKeyRelatedField(many=False, queryset=Driver.objects.all())
-    vehicles = FeatureSerializer(many=True, read_only=True)
+    features = FeatureSerializer(many=True, read_only=True)
 
     class Meta:
         model = Truck
@@ -61,7 +61,7 @@ class TruckSerializer(serializers.ModelSerializer):
 class PlaneSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     driver = serializers.PrimaryKeyRelatedField(many=False, queryset=Driver.objects.all())
-    vehicles = FeatureSerializer(many=True, read_only=True)
+    features = FeatureSerializer(many=True, read_only=True)
 
     class Meta:
         model = Plane
@@ -71,7 +71,7 @@ class PlaneSerializer(serializers.ModelSerializer):
 class TrainSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     driver = serializers.PrimaryKeyRelatedField(many=False, queryset=Driver.objects.all())
-    vehicles = FeatureSerializer(many=True, read_only=True)
+    features = FeatureSerializer(many=True, read_only=True)
 
     class Meta:
         model = Train
