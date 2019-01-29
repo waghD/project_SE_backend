@@ -1,7 +1,7 @@
 from rest_framework.routers import DefaultRouter
 from logistics.views import AirFreighterViewSet, RoadFreighterViewSet, RailFreighterViewSet,FreighterList,\
-     TruckViewSet, TrainViewSet, PlaneViewSet, TrainListViewSet, PlaneListViewSet, TruckListViewSet, \
-     UserViewSet, DriverViewSet, FeatureViewSet
+      TrainListViewSet, PlaneListViewSet, TruckListViewSet, \
+      DriverViewSet
 from rest_framework_extensions.routers import NestedRouterMixin
 
 
@@ -10,8 +10,6 @@ class NestedDefaultRouter(NestedRouterMixin, DefaultRouter):
 
 
 router = NestedDefaultRouter()
-user_router = router.register('users', UserViewSet)
-#feature_router = router.register('features', FeatureViewSet)
 freighters_router = router.register('freighters', FreighterList)
 air_router = router.register('airfreight', AirFreighterViewSet).register(
                         'planes', PlaneListViewSet,
@@ -30,7 +28,4 @@ rail_router.register(
     base_name='freighter-vehicles',
     parents_query_lookups=['company']
 )
-truck_router = router.register('trucks', TruckViewSet)
-plane_router = router.register('planes', PlaneViewSet)
-train_router = router.register('trains', TrainViewSet)
 driver_router = router.register('drivers', DriverViewSet)

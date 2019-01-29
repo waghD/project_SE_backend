@@ -1,41 +1,83 @@
 from django.http import HttpResponse
-from django.contrib.auth.models import User
+from django.views.generic import CreateView,UpdateView
 from .models import AirFreightCompany,RailwayFreightCompany,RoadFreightCompany,\
                      Truck, Plane, Train,  FreightCompany, Driver, Features
-from .serializers import TruckSerializer, PlaneSerializer, TrainSerializer, FeatureSerializer, \
-     PlaneListSerializer,TrainListSerializer, TruckListSerializer, UserSerializer,DriverSerializer,\
-     AirFreightCompanySerializer,RailwayFreightCompanySerializer,RoadFreightCompanySerializer, FreightCompanySerializer
-from rest_framework.viewsets import ModelViewSet, GenericViewSet, ReadOnlyModelViewSet
+from .serializers import FeatureSerializer, PlaneListSerializer,TrainListSerializer, TruckListSerializer,\
+                      DriverSerializer,AirFreightCompanySerializer,RailwayFreightCompanySerializer,\
+                      RoadFreightCompanySerializer, FreightCompanySerializer
+from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework_extensions.mixins import NestedViewSetMixin
-from rest_framework import mixins
 from .permissions import IsOwnerOrReadOnly
 from rest_framework import permissions,filters
 from django_filters.rest_framework import DjangoFilterBackend
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 def index(request):
     return HttpResponse("Hello, world. You're at the logistics index.")
 
 
-class DetailViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
-                    mixins.UpdateModelMixin, mixins.ListModelMixin, GenericViewSet):
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
-
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+class FCCreateView(LoginRequiredMixin, CreateView):
+    model = FreightCompany
+    fields = ('name', 'type', 'location', 'rating', 'destinations', 'permissions', 'revenue', 'founding_year')
+    success_url = 'http://localhost:8100/dashboard'
+    template_name = 'fc/fc_create_form.html'
 
 
-class UserViewSet(ReadOnlyModelViewSet):
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
+class FCUpdateView(LoginRequiredMixin, UpdateView):
+    model = FreightCompany
+    fields = ('name', 'type', 'location', 'rating', 'destinations', 'permissions', 'revenue', 'founding_year')
+    success_url = 'http://localhost:8100/dashboard'
+    template_name = 'fc/fc_update_form.html'
+
+
+class PlaneCreateView(LoginRequiredMixin,CreateView):
+    model = Plane
+    fields = ('name', 'types', 'occupied', 'location', 'length', 'maxWeight', 'driver', 'goods', 'company', 'features')
+    success_url = 'http://localhost:8100/dashboard'
+    template_name = 'vehicles/vehicle_create_form.html'
+
+
+class PlaneUpdateView(LoginRequiredMixin,UpdateView):
+    model = Plane
+    fields = ('name', 'types', 'occupied', 'location', 'length', 'maxWeight', 'driver', 'goods', 'company', 'features')
+    success_url = 'http://localhost:8100/dashboard'
+    template_name = 'vehicles/vehicle_update_form.html'
+
+
+class TrainCreateView(LoginRequiredMixin, CreateView):
+    model = Train
+    fields = ('name', 'types', 'occupied', 'location', 'length', 'maxWeight', 'driver', 'goods', 'company', 'features')
+    success_url = 'http://localhost:8100/dashboard'
+    template_name = 'vehicles/vehicle_create_form.html'
+
+
+class TrainUpdateView(LoginRequiredMixin,UpdateView):
+    model = Train
+    fields = ('name', 'types', 'occupied', 'location', 'length', 'maxWeight', 'driver', 'goods', 'company', 'features')
+    success_url = 'http://localhost:8100/dashboard'
+    template_name = 'vehicles/vehicle_update_form.html'
+
+
+class TruckCreateView(LoginRequiredMixin, CreateView):
+    model = Truck
+    fields = ('name', 'types', 'occupied', 'location', 'length', 'maxWeight', 'driver', 'goods', 'company', 'features')
+    success_url = 'http://localhost:8100/dashboard'
+    template_name = 'vehicles/vehicle_create_form.html'
+
+
+class TruckUpdateView(LoginRequiredMixin, UpdateView):
+    model = Truck
+    fields = ('name', 'types', 'occupied', 'location', 'length', 'maxWeight', 'driver', 'goods', 'company', 'features')
+    success_url = 'http://localhost:8100/dashboard'
+    template_name = 'vehicles/vehicle_update_form.html'
 
 
 class FreighterList(ReadOnlyModelViewSet):
     serializer_class = FreightCompanySerializer
     filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
-    filter_fields = ('name', 'type', 'location', 'permissions',)
-    search_fields = ('name','type', 'location','permissions',)
+    filter_fields = ('name', 'location', 'rating', 'destinations', 'permissions', 'revenue', 'founding_year')
+    search_fields = ('name', 'location', 'rating', 'destinations', 'permissions', 'revenue', 'founding_year')
     queryset = FreightCompany.objects.all()
 
 
@@ -68,7 +110,7 @@ class FeautureListViewSet(ReadOnlyModelViewSet, NestedViewSetMixin):
     queryset = Features.objects.all()
 
 
-class AirFreighterViewSet(ModelViewSet, NestedViewSetMixin):
+class AirFreighterViewSet(ReadOnlyModelViewSet, NestedViewSetMixin):
     serializer_class = AirFreightCompanySerializer
     filter_backends = (filters.SearchFilter,DjangoFilterBackend,)
     search_fields = ('name', 'type', 'location', 'permissions',)
@@ -77,37 +119,28 @@ class AirFreighterViewSet(ModelViewSet, NestedViewSetMixin):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
 
-
-class RoadFreighterViewSet(ModelViewSet, NestedViewSetMixin):
+class RoadFreighterViewSet(ReadOnlyModelViewSet, NestedViewSetMixin):
     serializer_class = RoadFreightCompanySerializer
     filter_backends = (filters.SearchFilter,DjangoFilterBackend,)
-    filter_fields = ('name', 'type', 'location', 'permissions',)
-    search_fields = ('name', 'type', 'location', 'permissions',)
+    filter_fields = ('name', 'location', 'permissions',)
+    search_fields = ('name', 'location', 'permissions',)
     queryset = RoadFreightCompany.objects.all()
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
 
-
-class RailFreighterViewSet(ModelViewSet, NestedViewSetMixin):
+class RailFreighterViewSet(ReadOnlyModelViewSet, NestedViewSetMixin):
     serializer_class = RailwayFreightCompanySerializer
     queryset = RailwayFreightCompany.objects.all()
     filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
-    filter_fields = ('name', 'type', 'location', 'permissions',)
-    search_fields = ('name', 'type', 'location', 'permissions',)
+    filter_fields = ('name', 'location', 'permissions',)
+    search_fields = ('name', 'location', 'permissions',)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
 
-
-class DriverViewSet(ModelViewSet, NestedViewSetMixin):
+class DriverViewSet(ReadOnlyModelViewSet, NestedViewSetMixin):
     serializer_class = DriverSerializer
     queryset = Driver.objects.all()
 
@@ -115,31 +148,7 @@ class DriverViewSet(ModelViewSet, NestedViewSetMixin):
         serializer.save(owner=self.request.user)
 
 
-class TruckViewSet(DetailViewSet, NestedViewSetMixin):
-    serializer_class = TruckSerializer
-    filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
-    filter_fields = ('name', 'types', 'location', 'goods', 'features', 'company__id')
-    search_fields = ('name', 'types', 'location', 'goods', 'features')
-    queryset = Truck.objects.all()
-
-
-class PlaneViewSet(DetailViewSet, NestedViewSetMixin):
-    serializer_class = PlaneSerializer
-    filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
-    filter_fields = ('name', 'types', 'location', 'goods', 'features', 'company__id')
-    search_fields = ('name', 'types', 'location','goods', 'features')
-    queryset = Plane.objects.all()
-
-
-class TrainViewSet(DetailViewSet, NestedViewSetMixin):
-    serializer_class = TrainSerializer
-    filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
-    filter_fields = ('name', 'types', 'location','goods', 'features', 'company__id')
-    search_fields = ('name', 'types', 'location','goods', 'features')
-    queryset = Train.objects.all()
-
-
-class FeatureViewSet(ModelViewSet, NestedViewSetMixin):
+class FeatureViewSet(ReadOnlyModelViewSet, NestedViewSetMixin):
     serializer_class = FeatureSerializer
     filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
     search_fields = ('name',)

@@ -56,11 +56,6 @@ class ManagerAirFreight(models.Manager):
 
             type='AIR')
 
-    def create(self, **kwargs):
-        kwargs.update({'type': 'AIR'})
-
-        return super(ManagerAirFreight, self).create(**kwargs)
-
 
 class ManagerRoadFreight(models.Manager):
 
@@ -75,11 +70,6 @@ class ManagerRoadFreight(models.Manager):
 
             type='ROAD')
 
-    def create(self, **kwargs):
-        kwargs.update({'type': 'ROAD'})
-
-        return super(ManagerRoadFreight, self).create(**kwargs)
-
 
 class ManagerRailwayFreight(models.Manager):
 
@@ -93,11 +83,6 @@ class ManagerRailwayFreight(models.Manager):
         return super(ManagerRailwayFreight, self).get_queryset().filter(
 
             type='RAIL')
-
-    def create(self, **kwargs):
-        kwargs.update({'type': 'RAIL'})
-
-        return super(ManagerRailwayFreight, self).create(**kwargs)
 
 
 class AirFreightCompany(FreightCompany):
