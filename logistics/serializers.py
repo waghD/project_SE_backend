@@ -14,7 +14,7 @@ class FreightListSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = FreightCompany
-        fields = ('name', 'location')
+        fields = ('id', 'name', 'location')
 
 
 class PlaneListSerializer(serializers.ModelSerializer):
@@ -54,7 +54,7 @@ class FreightCompanySerializer(CountryFieldMixin, serializers.ModelSerializer):
 
     class Meta:
         model = FreightCompany
-        fields = ('name', 'type', 'location', 'rating', 'destinations', 'permissions', 'revenue', 'founding_year', 'logo')  # nopep8
+        fields = ('id', 'name', 'type', 'location', 'rating', 'destinations', 'permissions', 'revenue', 'founding_year', 'logo')  # nopep8
 
 
 class AirFreightCompanySerializer(FreightCompanySerializer):
