@@ -31,15 +31,18 @@ class FreightCompany(models.Model):
     location = models.CharField(max_length=100, default='')
     FREIGHT_TYPES = (('AIR', 'Air-Freight'),
                      ('ROAD', 'Road-Freight'),
-                     ('RAIL', 'Railway-Freight'),)
+                     ('RAIL', 'Railway-Freight'),
+                     ('SHIP', 'Sea-Freight'),
+                     )
     type = models.CharField(choices=FREIGHT_TYPES, default='', max_length=100)
     owner = models.ForeignKey(User, related_name='freightcompany', on_delete=models.SET_NULL, null=True, blank=True)
     has_own_vehicles = models.BooleanField(default=True)
+    text = 'To select multiple destinations. Hold CTRL!'
     rating = models.PositiveSmallIntegerField(blank=True, null=True)
-    destinations = CountryField(multiple=True, blank_label='(select country)', blank=True)
-    permissions = models.TextField()
+    destinations = CountryField(multiple=True, blank_label='(select country)', blank=True, help_text=text)
+    permissions = models.CharField(default='', max_length=200)
     revenue = models.PositiveIntegerField()
-    founding_year = models.DateField()
+    founding_year = models.DateField(help_text='Date Format=1920-2-10')
     logo = models.ImageField
 
 
@@ -85,6 +88,20 @@ class ManagerRailwayFreight(models.Manager):
             type='RAIL')
 
 
+class ManagerSeaFreight(models.Manager):
+
+    def save(self, *args, **kwargs):
+        if not self._state.adding and (
+                self.type != self._loaded_values['type']):
+            raise ValueError("Updating type is not allowed")
+        super().save(*args, **kwargs)
+
+    def get_queryset(self):
+        return super(ManagerSeaFreight, self).get_queryset().filter(
+
+            type='SHIP')
+
+
 class AirFreightCompany(FreightCompany):
     objects = ManagerAirFreight()
 
@@ -101,6 +118,13 @@ class RoadFreightCompany(FreightCompany):
 
 class RailwayFreightCompany(FreightCompany):
     objects = ManagerRailwayFreight()
+
+    class Meta:
+        proxy = True
+
+
+class SeaFreightCompany(FreightCompany):
+    objects = ManagerSeaFreight()
 
     class Meta:
         proxy = True
@@ -132,6 +156,7 @@ class Vehicle(models.Model):
     VEHICLE_TYPES = (('ROAD', 'Truck'),
                      ('AIR', 'Airplane'),
                      ('RAIL', 'Train'),
+                     ('SEA', 'Ship'),
                      )
     types = models.CharField(choices=VEHICLE_TYPES, default='', max_length=100)
     name = models.CharField(default='', max_length=100)
@@ -203,6 +228,25 @@ class ManagerTrain(models.Manager):
         return super(ManagerTrain, self).create(**kwargs)
 
 
+class ManagerShip(models.Manager):
+
+    def save(self, *args, **kwargs):
+        if not self._state.adding and (
+                self.types != self._loaded_values['types']):
+            raise ValueError("Updating type is not allowed")
+        super().save(*args, **kwargs)
+
+    def get_queryset(self):
+        return super(ManagerShip, self).get_queryset().filter(
+
+            types='Ship')
+
+    def create(self, **kwargs):
+        kwargs.update({'types': 'Ship'})
+
+        return super(ManagerShip, self).create(**kwargs)
+
+
 class Train(Vehicle):
     objects = ManagerTrain()
     company = models.ForeignKey(RailwayFreightCompany, on_delete=models.CASCADE, default='')
@@ -213,6 +257,12 @@ class Plane(Vehicle):
     objects = ManagerPlane()
     company = models.ForeignKey(AirFreightCompany, on_delete=models.CASCADE, default='')
     features = models.ManyToManyField('Features', limit_choices_to={'vehicle': 'AIR'})
+
+
+class Ship(Vehicle):
+    objects = ManagerShip()
+    company = models.ForeignKey(SeaFreightCompany, on_delete=models.CASCADE, default='')
+    features = models.ManyToManyField('Features', limit_choices_to={'vehicle': 'SEA'})
 
 
 class Truck(Vehicle):
@@ -233,6 +283,7 @@ class Features(models.Model):
     VEHICLE_TYPES = (('ROAD', 'Truck'),
                      ('AIR', 'Airplane'),
                      ('RAIL', 'Train'),
+                     ('SEA', 'Ship'),
                      )
     vehicle = models.CharField(choices=VEHICLE_TYPES, default='', max_length=100)
     name = models.CharField(max_length=100, default='')

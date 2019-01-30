@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import FreightCompany, Truck, Plane, Train, Driver, Features
+from .models import FreightCompany, Truck, Plane, Train, Driver, Features, Ship
 from django_countries.serializers import CountryFieldMixin
 
 
@@ -22,7 +22,7 @@ class PlaneListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Plane
-        fields = ('id', 'name', 'types', 'occupied', 'company','features')
+        fields = ('id', 'name', 'types', 'occupied', 'company', 'features')
 
 
 class TrainListSerializer(serializers.ModelSerializer):
@@ -30,7 +30,7 @@ class TrainListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Train
-        fields = ('id','name', 'types', 'occupied','features')
+        fields = ('id','name', 'types', 'occupied', 'features')
 
 
 class TruckListSerializer(serializers.ModelSerializer):
@@ -38,6 +38,14 @@ class TruckListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Truck
+        fields = ('id', 'name', 'types', 'occupied', 'licenseplate', 'features')
+
+
+class ShipListSerializer(serializers.ModelSerializer):
+    features = FeatureSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Ship
         fields = ('id', 'name', 'types', 'occupied', 'features')
 
 
@@ -68,6 +76,13 @@ class RoadFreightCompanySerializer(FreightCompanySerializer):
 
     class Meta(FreightCompanySerializer.Meta):
         fields = FreightCompanySerializer.Meta.fields + ('trucks',)
+
+
+class SeaFreightCompanySerializer(FreightCompanySerializer):
+    ships = ShipListSerializer(many=True, read_only=True)
+
+    class Meta(FreightCompanySerializer.Meta):
+        fields = FreightCompanySerializer.Meta.fields + ('ships',)
 
 
 class DriverSerializer(serializers.ModelSerializer):
