@@ -21,7 +21,7 @@ from .api import router
 from logistics.views import FCUpdateView, FCCreateView,FCDeleteView, PlaneCreateView, PlaneUpdateView, TrainCreateView, \
     TrainUpdateView, TruckCreateView, TruckUpdateView, ShipCreateView, ShipUpdateView,ShipDeleteView,TrainDeleteView, \
     PlaneDeleteView, FeatureCreateView,FeatureUpdateView,FeatureDeleteView, DriverCreateView,DriverUpdateView, \
-    DriverDeleteView,TruckDeleteView
+    DriverDeleteView,TruckDeleteView, PermissionCreateView,PermissionDeleteView,PermissionUpdateView
 
 
 schema_view = get_swagger_view(title='Logistics Api')
@@ -47,6 +47,9 @@ urlpatterns = [
     path('feature/add/', FeatureCreateView.as_view(), name='feature_create'),
     path('feature/edit/<int:pk>/', FeatureUpdateView.as_view(), name='feature_update'),
     path('feature/delete/<int:pk>/', FeatureDeleteView.as_view(), name='feature_delete'),
+    path('permission/add/', PermissionCreateView.as_view(), name='feature_create'),
+    path('permission/edit/<int:pk>/', PermissionUpdateView.as_view(), name='feature_update'),
+    path('permission/delete/<int:pk>/', PermissionDeleteView.as_view(), name='feature_delete'),
     path('driver/add/', DriverCreateView.as_view(), name='driver_create'),
     path('driver/edit/<int:pk>/', DriverUpdateView.as_view(), name='driver_update'),
     path('driver/delete/<int:pk>/', DriverDeleteView.as_view(), name='driver_delete'),

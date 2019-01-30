@@ -40,7 +40,6 @@ class FreightCompany(models.Model):
     text = 'To select multiple destinations. Hold CTRL!'
     rating = models.PositiveSmallIntegerField(blank=True, null=True)
     destinations = CountryField(multiple=True, blank_label='(select country)', blank=True, help_text=text)
-    permissions = models.CharField(default='', max_length=200)
     revenue = models.PositiveIntegerField()
     founding_year = models.DateField(help_text='Date Format=1920-2-10')
     logo = models.ImageField
@@ -251,18 +250,21 @@ class Train(Vehicle):
     objects = ManagerTrain()
     company = models.ForeignKey(RailwayFreightCompany, on_delete=models.CASCADE, default='')
     features = models.ManyToManyField('Features', limit_choices_to={'vehicle': 'RAIL'})
+    permissions = models.ManyToManyField('Permissions', limit_choices_to={'vehicle': 'RAIL'}, related_name='+')
 
 
 class Plane(Vehicle):
     objects = ManagerPlane()
     company = models.ForeignKey(AirFreightCompany, on_delete=models.CASCADE, default='')
     features = models.ManyToManyField('Features', limit_choices_to={'vehicle': 'AIR'})
+    permissions = models.ManyToManyField('Permissions', limit_choices_to={'vehicle': 'AIR'},related_name='+')
 
 
 class Ship(Vehicle):
     objects = ManagerShip()
     company = models.ForeignKey(SeaFreightCompany, on_delete=models.CASCADE, default='')
     features = models.ManyToManyField('Features', limit_choices_to={'vehicle': 'SEA'})
+    permissions = models.ManyToManyField('Permissions', limit_choices_to={'vehicle': 'SEA'}, related_name='+')
 
 
 class Truck(Vehicle):
@@ -274,6 +276,7 @@ class Truck(Vehicle):
     emission_class = models.CharField(max_length=5)
     company = models.ForeignKey(RoadFreightCompany, on_delete=models.CASCADE, default='')
     features = models.ManyToManyField('Features', limit_choices_to={'vehicle': 'ROAD'})
+    permissions = models.ManyToManyField('Permissions', limit_choices_to={'vehicle': 'ROAD'}, related_name='+')
 
 
 class Features(models.Model):
@@ -290,6 +293,12 @@ class Features(models.Model):
     description = models.TextField(max_length=100, blank=True)
 
 
+class Permissions(Features):
+
+    class Meta:
+        proxy = True
+
+
 class Driver(models.Model):
     def __str__(self):
         return self.name
@@ -301,4 +310,3 @@ class Driver(models.Model):
     driving_license_classes = models.CharField(max_length=250)
     work_experience = models.PositiveSmallIntegerField()
     available = models.BooleanField(default=True)
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
