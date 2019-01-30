@@ -20,14 +20,14 @@ def index(request):
 
 class FCCreateView(LoginRequiredMixin, CreateView):
     model = FreightCompany
-    fields = ('name', 'type', 'location', 'rating', 'destinations', 'permissions', 'revenue', 'founding_year')
+    fields = ('name', 'type', 'location', 'rating', 'destinations', 'revenue', 'founding_year')
     success_url = 'http://localhost:8100/dashboard'
     template_name = 'fc/fc_create_form.html'
 
 
 class FCUpdateView(LoginRequiredMixin, UpdateView):
     model = FreightCompany
-    fields = ('name', 'type', 'location', 'rating', 'destinations', 'permissions', 'revenue', 'founding_year')
+    fields = ('name', 'type', 'location', 'rating', 'destinations', 'revenue', 'founding_year')
     success_url = 'http://localhost:8100/dashboard'
     template_name = 'fc/fc_update_form.html'
 
